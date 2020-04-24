@@ -1,0 +1,22 @@
+{
+  "name": "construct2-tools",
+  "version": "1.0.0",
+  "description": "Tools to help in Construct2 addon development.",
+  "main": "./bin/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "JeyDotC",
+  "license": "MIT",
+  "bin": {
+    "construct2": "./bin/index.js"
+  },
+  "files": [
+    "addon",
+    "commands",
+    "renderer"
+  ],
+  "dependencies": {
+    "yargs": "^15.3.1"
+  }
+}
