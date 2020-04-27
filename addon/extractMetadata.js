@@ -28,6 +28,13 @@ global.pf_effects = (1 << 10);			// Allow effects to be added to the plugin
 global.pf_predraw = (1 << 11);			// Must pre-draw when using effects
 global.pf_deprecated = (1 << 12);		// Hidden by default
 
+global.ef_none = 0;
+global.ef_deprecated = 1;					// still exists and usable in existing projects using it, but hidden from dialog
+global.ef_return_number = (1 << 1);		// expression returns integer or float
+global.ef_return_string = (1 << 2);		// expression returns string
+global.ef_return_any = (1 << 3);			// expression can return any type
+global.ef_variadic_parameters = (1 << 4);	// expression accepts any number of any type parameters after those that are defined
+
 global.ept_section = 'section';				// new section
 
 global.cr = {};
@@ -39,6 +46,25 @@ global.cr.RGB = function (red, green, blue) {
 
     return rgbNumber.toString(16);
 };
+
+function expresionFlags(flags) {
+    let type = "any";
+
+    if (flags & ef_return_string) {
+        type = "string";
+    }
+
+    if (flags & ef_return_number) {
+        type = "number";
+    }
+
+    return {
+        isNone: flags === ef_none,
+        isDeprecated: flags & ef_deprecated,
+        isVariadic: flags & ef_variadic_parameters,
+        type,
+    };
+}
 
 function extractMetadata(originFolder) {
 
@@ -60,7 +86,7 @@ function extractMetadata(originFolder) {
     global.cr.Property = Property;
 
     let currentParams = [];
-    let currentComboParamOptions = []
+    let currentComboParamOptions = [];
 
     function AddNumberParam(name, description, defaultValue) {
         currentParams.push({
@@ -96,13 +122,22 @@ function extractMetadata(originFolder) {
         currentComboParamOptions.push(value);
     }
 
-    function AddAction(id, flags, name, category, uiHint, description) {
-        addonMetadata.addAction(id, flags, name, category, uiHint, description, currentParams);
+    function AddAction(id, flags, name, category, uiHint, description, method) {
+        addonMetadata.addAction(id, flags, name, category, uiHint, description, currentParams, method);
+        currentParams = [];
+        currentComboParamOptions = [];
+    }
+
+    function AddExpression(id, flags, name, category, method, description){
+        const flagsOptions = expresionFlags(flags);
+
+        addonMetadata.addExpression(id, flags, name, category, description, currentParams, method, flagsOptions.type);
         currentParams = [];
         currentComboParamOptions = [];
     }
 
     global.AddAction = AddAction;
+    global.AddExpression = AddExpression;
     global.AddNumberParam = AddNumberParam;
     global.AddStringParam = AddStringParam;
     global.AddComboParam = AddComboParam;

@@ -7,6 +7,7 @@ class MarkDownAddonMetadataRenderer {
 
         const lines = [
             `# ${addonMetadata.addonSettings.name}`,
+            `**Type:** ${addonMetadata.addonType}`,
             ``,
             `${addonMetadata.addonSettings.description}`,
             ``,
@@ -18,12 +19,17 @@ class MarkDownAddonMetadataRenderer {
             ``,
             `# ACES`,
             ``,
-            ``,
             `## Actions`,
             ``,
             `| Name | Description | Parameters |`,
             `|------|-------------|------------|`,
             ...this.renderActionRows(addonMetadata),
+            ``,
+            `## Expressions`,
+            ``,
+            `| Name | Type | Description | Parameters |`,
+            `|------|------|-------------|------------|`,
+            ...this.renderExpressionRows(addonMetadata),
         ];
 
         return lines.join('\n');
@@ -42,22 +48,33 @@ class MarkDownAddonMetadataRenderer {
     }
 
     renderActionRows(addonMetadata){
-        const actionsByCategory = addonMetadata.actions.reduce((dictionary, action) => {
-            if(dictionary[action.category] === undefined){
-                dictionary[action.category] = [];
-            }
-            dictionary[action.category].push(action);
-            return dictionary;
-        }, {});
-
+        const actionsByCategory = MarkDownAddonMetadataRenderer.categorize(addonMetadata.actions);
         const rows = [];
-
         Object.entries(actionsByCategory).forEach(([category, actions])=> {
            rows.push(`| |**${category}**| |`);
            actions.forEach(action => {
                const parameters = this.renderParameters(action.parameters);
                rows.push(`|**${action.name}**| ${action.description} | ${parameters} |`);
            });
+        });
+
+        return rows;
+    }
+
+    renderExpressionRows(addonMetadata){
+        const expressionsByCategory = MarkDownAddonMetadataRenderer.categorize(addonMetadata.expressions);
+        const rows = [];
+        const addonName = addonMetadata.addonSettings.name;
+        const owner = addonMetadata.addonType === "Plugin" ? addonName : `MyObject.${addonName}` ;
+
+        Object.entries(expressionsByCategory).forEach(([category, expressions])=> {
+            rows.push(`| | |**${category}**| |`);
+            expressions.forEach(expression => {
+                const parameters = this.renderParameters(expression.parameters);
+                const usageParameters = expression.parameters.length > 0 ? `(${','.repeat(expression.parameters.length)})` : '';
+                const expressionUsage = `${owner}.${expression.method}${usageParameters}`;
+                rows.push(`|**${expression.name}**<br/>**Usage:** ${this.quoteAsCode(expressionUsage)}|${this.quoteAsCode(expression.returnType)}| ${expression.description} | ${parameters} |`);
+            });
         });
 
         return rows;
@@ -72,6 +89,16 @@ class MarkDownAddonMetadataRenderer {
 
             return `- **${p.name}** _${p.type}_${defaultValue}: ${p.description} ${options}`;
         }).join('<br />');
+    }
+
+    static categorize(entries){
+        return entries.reduce((dictionary, entry) => {
+            if(dictionary[entry.category] === undefined){
+                dictionary[entry.category] = [];
+            }
+            dictionary[entry.category].push(entry);
+            return dictionary;
+        }, {});
     }
 }
 

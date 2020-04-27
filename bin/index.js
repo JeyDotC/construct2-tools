@@ -14,5 +14,3 @@ const argv = require('yargs')
 
         readmeGenerate(pwd, relativeDestinationFile);
     }).argv;
-
-console.log(argv);
