@@ -23,7 +23,13 @@ class MarkDownAddonMetadataRenderer {
             ``,
             `| Name | Description | Parameters |`,
             `|------|-------------|------------|`,
-            ...this.renderActionRows(addonMetadata),
+            ...this.renderActionRows(addonMetadata.actions),
+            ``,
+            `## Conditions`,
+            ``,
+            `| Name | Description | Parameters |`,
+            `|------|-------------|------------|`,
+            ...this.renderActionRows(addonMetadata.conditions),
             ``,
             `## Expressions`,
             ``,
@@ -38,23 +44,23 @@ class MarkDownAddonMetadataRenderer {
     renderPropertyRows(addonMetadata){
         return addonMetadata.properties.map(p => {
             if (p.type === 'section') {
-                return `| | | **${p.name}**| |`;
+                return `| | | **${p.name.trim()}**| |`;
             }
 
             const defaultValue = p.defaultValue ? `Default value: \`${p.defaultValue}\`` : '';
             const options = p.options !== undefined ? p.options.split('|').map(o => `- ${o}`).join('<br/>') : '';
-            return `|**${p.name}**| _${p.type}_ | ${p.description} ${defaultValue} | ${options} |`;
+            return `|**${p.name.trim()}**| _${p.type}_ | ${p.description} ${defaultValue} | ${options} |`;
         })
     }
 
-    renderActionRows(addonMetadata){
-        const actionsByCategory = MarkDownAddonMetadataRenderer.categorize(addonMetadata.actions);
+    renderActionRows(entries){
+        const actionsByCategory = MarkDownAddonMetadataRenderer.categorize(entries);
         const rows = [];
         Object.entries(actionsByCategory).forEach(([category, actions])=> {
-           rows.push(`| |**${category}**| |`);
+           rows.push(`| |**${category.trim()}**| |`);
            actions.forEach(action => {
                const parameters = this.renderParameters(action.parameters);
-               rows.push(`|**${action.name}**| ${action.description} | ${parameters} |`);
+               rows.push(`|**${action.name.trim()}**| ${action.description} | ${parameters} |`);
            });
         });
 
@@ -68,12 +74,12 @@ class MarkDownAddonMetadataRenderer {
         const owner = addonMetadata.addonType === "Plugin" ? addonName : `MyObject.${addonName}` ;
 
         Object.entries(expressionsByCategory).forEach(([category, expressions])=> {
-            rows.push(`| | |**${category}**| |`);
+            rows.push(`| | |**${category.trim()}**| |`);
             expressions.forEach(expression => {
                 const parameters = this.renderParameters(expression.parameters);
                 const usageParameters = expression.parameters.length > 0 ? `(${','.repeat(expression.parameters.length)})` : '';
                 const expressionUsage = `${owner}.${expression.method}${usageParameters}`;
-                rows.push(`|**${expression.name}**<br/>**Usage:** ${this.quoteAsCode(expressionUsage)}|${this.quoteAsCode(expression.returnType)}| ${expression.description} | ${parameters} |`);
+                rows.push(`|**${expression.name.trim()}**<br/><small>**Usage:** ${this.quoteAsCode(expressionUsage)}</small>|${this.quoteAsCode(expression.returnType)}| ${expression.description} | ${parameters} |`);
             });
         });
 
@@ -87,7 +93,7 @@ class MarkDownAddonMetadataRenderer {
             const defaultValue = p.defaultValue ? ` = ${this.quoteAsCode(p.defaultValue)}` : '';
             const options = p.options ? ` **Options**: (${p.options.map(this.quoteAsCode).join(', ')})` : '';
 
-            return `- **${p.name}** _${p.type}_${defaultValue}: ${p.description} ${options}`;
+            return `- **${p.name.trim()}** _${p.type}_${defaultValue}: ${p.description} ${options}`;
         }).join('<br />');
     }
 

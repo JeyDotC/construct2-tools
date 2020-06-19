@@ -4,6 +4,7 @@ class AddonMetadata {
         this.addonSettings = {};
         this.properties = [];
         this.actions = [];
+        this.conditions = [];
         this.expressions = [];
     }
 
@@ -17,9 +18,14 @@ class AddonMetadata {
         });
     }
 
-    // AddExpression(10, ef_return_number, "Far", "Camera", "Far", "The furthest distance an object will be drawn in 3D units.");
     addExpression(id, flags, name, category, description, parameters, method, returnType){
         this.expressions.push({id, flags, name, category, description, parameters, method, returnType});
+    }
+
+    addCondition(id, flags, name, category, uiHint, description, parameters, method){
+        this.conditions.push({
+            id, flags, name, category, uiHint, description, parameters, method
+        });
     }
 
     set settings ({ settings, type }){

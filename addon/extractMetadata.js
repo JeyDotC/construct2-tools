@@ -87,6 +87,14 @@ function extractMetadata(originFolder) {
 
     let currentParams = [];
     let currentComboParamOptions = [];
+    
+    function AddCmpParam(name, description) {
+        currentParams.push({
+            type: 'comparison',
+            name,
+            description,
+        });
+    }
 
     function AddNumberParam(name, description, defaultValue) {
         currentParams.push({
@@ -136,8 +144,16 @@ function extractMetadata(originFolder) {
         currentComboParamOptions = [];
     }
 
+    function AddCondition(id, flags, name, category, uiHint, description, method) {
+        addonMetadata.addCondition(id, flags, name, category, uiHint, description, currentParams, method);
+        currentParams = [];
+        currentComboParamOptions = [];
+    }
+
     global.AddAction = AddAction;
+    global.AddCondition = AddCondition;
     global.AddExpression = AddExpression;
+    global.AddCmpParam = AddCmpParam;
     global.AddNumberParam = AddNumberParam;
     global.AddStringParam = AddStringParam;
     global.AddComboParam = AddComboParam;
