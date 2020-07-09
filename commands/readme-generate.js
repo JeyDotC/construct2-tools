@@ -2,9 +2,7 @@ const fs = require('fs');
 const MarkDownAddonMetadataRenderer = require('../renderer/MarkDownAddonMetadataRenderer');
 const extractMetadata = require('../addon/extractMetadata');
 
-function readmeGenerate(pwd, relativeDestinationFile) {
-
-    const destinationFile = `${pwd}/${relativeDestinationFile}`;
+function readmeGenerate(pwd, destinationFile) {
 
     const addonMetadata = extractMetadata(pwd);
 
