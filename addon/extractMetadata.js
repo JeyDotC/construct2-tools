@@ -76,6 +76,18 @@ function extractMetadata(originFolder) {
     }
 
     fs.copyFileSync(originFile, `${tempDir}/edittime.js`);
+    fs.appendFileSync(`${tempDir}/edittime.js`, `
+        let settings = () => {};
+        let type = '';
+        if(typeof GetBehaviorSettings !== 'undefined'){
+            settings = GetBehaviorSettings;
+            type = 'Behavior';
+        }else if(typeof GetPluginSettings){
+            settings = GetPluginSettings;
+            type = 'Plugin';
+        }
+        module.exports = { settings, type };
+    `);
 
     const addonMetadata = new AddonMetadata();
 
