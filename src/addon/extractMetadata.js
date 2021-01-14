@@ -1,6 +1,5 @@
 const fs = require('fs');
 const AddonMetadata = require('../addon/AddonMetadata');
-const MarkDownAddonMetadataRenderer = require('../renderer/MarkDownAddonMetadataRenderer');
 
 global.ACESDone = function () {
     // TODO: Process ACES.

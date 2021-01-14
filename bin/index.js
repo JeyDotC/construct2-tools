@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-const readmeGenerate = require('../commands/readme-generate');
+const readmeGenerate = require('../src/commands/readme-generate');
+const resolveDependency = require('../src/dependencies/resolveDependency');
 
 const argv = require('yargs')
     .command('readme-generate [destFile]', 'Generates a readme file', yargs => {
@@ -21,6 +22,10 @@ const argv = require('yargs')
         const absoluteDestinationFile = toFullLocation(pwd, relativeDestinationFile);
 
         readmeGenerate(absoluteSourcesLocation, absoluteDestinationFile);
+    }).command('dependencies-resolve', "Manage dependencies repository", yargs => {
+
+    }, argv => {
+        resolveDependency('jj_weapon');
     }).argv;
 
 function toFullLocation(pwd, fileName) {
