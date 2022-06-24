@@ -21,7 +21,7 @@
     "renderer"
   ],
   "dependencies": {
-    "jsdom": "^16.4.0",
+    "jsdom": "^16.5.0",
     "yargs": "^15.3.1"
   }
 }
